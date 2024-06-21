@@ -13,7 +13,6 @@ const getAllTeams = async (_req: Request, res: Response) => {
     if (error instanceof Error) {
       return res.status(mapStatusHTTP(error.message)).json({});
     }
-    return res.status(500).json({ message: 'fatal error' });
   }
 };
 
@@ -30,7 +29,6 @@ const getTeamById = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       return res.status(mapStatusHTTP(error.message)).json({});
     }
-    return res.status(500).json({ message: 'fatal error' });
   }
 };
 

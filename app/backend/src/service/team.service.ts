@@ -17,9 +17,9 @@ const getTeamById = async (id: number): Promise<TeamsDBReturnOne> => {
     attributes: ['id', 'teamName'],
   });
 
-  if (!team) return { status: 'NOT_FOUND', data: null };
+  if (team) return { status: 'SUCCESSFUL', data: team };
 
-  return { status: 'SUCCESSFUL', data: team };
+  return { status: 'NOT_FOUND', data: null };
 };
 
 export default {
