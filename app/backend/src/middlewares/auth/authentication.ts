@@ -16,29 +16,34 @@ const userExists = async (email: string) => {
 
   return user?.dataValues;
 };
+const sign = (payload: TokenPayload): string => {
+  const token = jwt.sign(payload, secret);
+  return token;
+};
 
 const authentication = async (
   req: Request,
   res: Response,
 ) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await userExists(email);
+    const user = await userExists(email);
+    const token = sign({ email: email as string, role: 'admin' });
 
-  const comparePassword = bcrypt.compareSync(password, user?.password as string);
+    const comparePassword = await bcrypt.compare(password, user?.password as string);
 
-  if (!user || comparePassword === false) {
-    return res.status(401).json({ message: 'Invalid email or password' });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+    if (comparePassword === false) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    return res.status(200).json({ token });
+  } catch (error) {
+    return res.status(500).json({ message: error });
   }
-
-  const sign = (payload: TokenPayload): string => {
-    const token = jwt.sign(payload, secret);
-    return token;
-  };
-
-  const token = sign({ email: email as string, role: 'admin' });
-
-  return res.status(200).json({ token });
 };
 
 export default authentication;
