@@ -11,17 +11,10 @@ type TokenPayload = {
   role: string,
 };
 
-const userExists = async (email: string, inputPassword: string) => {
-  const password = bcrypt.hashSync(inputPassword, 10);
+const userExists = async (email: string) => {
+  const user = await UserModel.findOne({ where: { email } });
 
-  const user = await UserModel.findOne(
-    { where: {
-      email,
-      password,
-    } },
-  );
-
-  return user;
+  return user?.dataValues;
 };
 
 const authentication = async (
@@ -29,9 +22,12 @@ const authentication = async (
   res: Response,
 ) => {
   const { email, password } = req.body;
-  const user = await userExists(email, password);
 
-  if (!user) {
+  const user = await userExists(email);
+
+  const comparePassword = bcrypt.compareSync(password, user?.password as string);
+
+  if (!user || comparePassword === false) {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
 
