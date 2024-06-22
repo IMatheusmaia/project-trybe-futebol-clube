@@ -33,7 +33,7 @@ const authentication = async (
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-    const token = sign({ email: email as string, role: 'admin' });
+    const token = sign({ email: email as string, role: user.role });
     const comparePassword = await bcrypt.compare(password, user?.password as string);
 
     if (comparePassword === false) {
