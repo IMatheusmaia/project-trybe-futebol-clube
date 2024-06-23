@@ -16,7 +16,7 @@ const verify = (token: string): TokenPayload => {
 };
 
 const userExists = async (email: string) => {
-  const user = await UserModel.findOne({ where: { email } });
+  const user = await UserModel.findOne({ where: { email }, attributes: { exclude: ['password'] } });
 
   return user?.dataValues;
 };
@@ -38,6 +38,7 @@ const authorizationVerify = (req: Request, res: Response, next: NextFunction) =>
     return res.status(401).json({ message: 'Token must be a valid token' });
   }
   res.status(200).json({ role: decoded.role });
+  req.body.user = user;
 
   next();
 };
