@@ -2,9 +2,13 @@ import { Request, Response } from 'express';
 import MatchService from '../service/match.service';
 import mapStatusHTTP from '../utils/mapStatusHTTP';
 
-const getAllMatches = async (_req: Request, res: Response) => {
+const getAllMatches = async (req: Request, res: Response) => {
   try {
-    const { status, data } = await MatchService.getAllMatches();
+    const { inProgress } = req.query;
+    const boolean = inProgress === 'true';
+    const { status, data } = inProgress !== undefined
+      ? await MatchService.getAllInProgress(boolean)
+      : await MatchService.getAllMatches();
 
     if (status === 'SUCCESSFUL') return res.status(mapStatusHTTP(status)).json(data);
 
