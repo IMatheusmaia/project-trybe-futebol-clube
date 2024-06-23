@@ -10,21 +10,23 @@ type TokenPayload = {
   role: string,
 };
 
-const verify = (token: string): TokenPayload => {
-  const data = jwt.verify(token, secret) as TokenPayload;
-  return data;
+const userExists = async (email: string | undefined) => {
+  const user = await UserModel.findOne({ where: { email }, attributes: { exclude: ['password'] } });
+
+  return user;
 };
 
-const userExists = async (email: string) => {
-  const user = await UserModel.findOne({ where: { email },
-    attributes: { exclude: ['password'], include: ['email', 'role'] } });
-
-  return user?.dataValues;
+const verify = (token: string): TokenPayload | null | undefined => {
+  try {
+    const data = jwt.verify(token, secret) as TokenPayload;
+    if (data) return data;
+  } catch (error) {
+    return null;
+  }
 };
 
-const authorizationVerify = (req: Request, res: Response, next: NextFunction) => {
+const authorizationVerify = async (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
-  const { email } = req.body.user;
 
   if (!authorization) {
     return res.status(401).json({ message: 'Token not found' });
@@ -33,10 +35,12 @@ const authorizationVerify = (req: Request, res: Response, next: NextFunction) =>
   const token = authorization.split(' ')[1];
   const decoded = verify(token);
 
+  if (!decoded) {
+    return res.status(401).json({ message: 'Token must be a valid token' });
+  }
   const decodedEmail = decoded.email;
-  const user = userExists(decodedEmail);
-
-  if (email !== decodedEmail && !user) {
+  const user = await userExists(decodedEmail);
+  if (!user) {
     return res.status(401).json({ message: 'Token must be a valid token' });
   }
   res.status(200).json({ role: decoded.role });
