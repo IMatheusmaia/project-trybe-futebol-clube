@@ -12,7 +12,7 @@ type TokenPayload = {
 };
 
 const userExists = async (email: string) => {
-  const user = await UserModel.findOne({ where: { email }, attributes: { exclude: ['password'] } });
+  const user = await UserModel.findOne({ where: { email } });
 
   return user?.dataValues;
 };
