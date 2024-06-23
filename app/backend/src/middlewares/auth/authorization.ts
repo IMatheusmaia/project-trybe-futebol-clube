@@ -16,13 +16,15 @@ const verify = (token: string): TokenPayload => {
 };
 
 const userExists = async (email: string) => {
-  const user = await UserModel.findOne({ where: { email }, attributes: { exclude: ['password'] } });
+  const user = await UserModel.findOne({ where: { email },
+    attributes: { exclude: ['password'], include: ['email', 'role'] } });
 
   return user?.dataValues;
 };
 
 const authorizationVerify = (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
+  const { email } = req.body.user;
 
   if (!authorization) {
     return res.status(401).json({ message: 'Token not found' });
@@ -34,7 +36,7 @@ const authorizationVerify = (req: Request, res: Response, next: NextFunction) =>
   const decodedEmail = decoded.email;
   const user = userExists(decodedEmail);
 
-  if (!user) {
+  if (email !== decodedEmail && !user) {
     return res.status(401).json({ message: 'Token must be a valid token' });
   }
   res.status(200).json({ role: decoded.role });

@@ -12,7 +12,7 @@ type TokenPayload = {
 };
 
 const userExists = async (email: string) => {
-  const user = await UserModel.findOne({ where: { email } });
+  const user = await UserModel.findOne({ where: { email }, attributes: { exclude: ['password'] } });
 
   return user?.dataValues;
 };
@@ -25,25 +25,21 @@ const authentication = async (
   req: Request,
   res: Response,
 ) => {
-  try {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    const user = await userExists(email);
+  const user = await userExists(email);
 
-    if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-    const token = sign({ email: email as string, role: user.role });
-    const comparePassword = await bcrypt.compare(password, user?.password as string);
-
-    if (comparePassword === false) {
-      return res.status(401).json({ message: 'Invalid email or password' });
-    }
-
-    return res.status(200).json({ token });
-  } catch (error) {
-    return res.status(500).json({ message: error });
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid email or password' });
   }
+  const token = sign({ email: email as string, role: user.role });
+  const comparePassword = await bcrypt.compare(password, user?.password as string);
+
+  if (comparePassword === false) {
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
+  req.body.user = user;
+  return res.status(200).json({ token });
 };
 
 export default authentication;

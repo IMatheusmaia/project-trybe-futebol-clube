@@ -24,7 +24,4 @@ const TeamModel: TeamSequelizeModelCreator = db.define('Team', {
   underscored: true,
 });
 
-// TeamModel.belongsTo(MatchersModel, { foreignKey: 'homeTeam', as: 'homeTeam' });
-// TeamModel.belongsTo(MatchersModel, { foreignKey: 'awayTeam', as: 'awayTeam' });
-
 export default TeamModel;
