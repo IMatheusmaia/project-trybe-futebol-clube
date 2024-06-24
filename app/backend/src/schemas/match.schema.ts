@@ -7,4 +7,14 @@ const matchGoalsSchema = Joi.object({
   awayTeamGoals: Joi.number().positive().allow(0).required(),
 }) as ObjectSchema<GoalsInputMatch>;
 
-export default matchGoalsSchema;
+const matchSchema = Joi.object({
+  homeTeamId: Joi.number().positive().required(),
+  awayTeamId: Joi.number().positive().required(),
+  homeTeamGoals: Joi.number().positive().allow(0).required(),
+  awayTeamGoals: Joi.number().positive().allow(0).required(),
+}) as ObjectSchema;
+
+export {
+  matchGoalsSchema,
+  matchSchema,
+};

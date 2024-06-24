@@ -49,9 +49,19 @@ const updateGoals = async (req: Request, res: Response) => {
     }
   }
 };
+const createMatch = async (req: Request, res: Response) => {
+  try {
+    const newMatch = await MatchService.createMatch(req.body);
+
+    if (newMatch) return res.status(201).json(newMatch);
+  } catch (error: unknown) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 export default {
   getAllMatches,
   updateProgress,
   updateGoals,
+  createMatch,
 };

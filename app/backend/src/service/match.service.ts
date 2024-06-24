@@ -1,6 +1,6 @@
 import MatchModel from '../database/models/match.model';
 import TeamModel from '../database/models/team.model';
-import { MatchesDBReturnAll } from '../types/matches';
+import { MatchesDBReturnAll, matchInput } from '../types/matches';
 
 const getAllMatches = async (): Promise<MatchesDBReturnAll> => {
   const matches = await MatchModel.findAll({
@@ -65,9 +65,16 @@ const updateGoals = async (id: number, homeTeamGoals: number, awayTeamGoals: num
   return { status: 'SUCCESSFUL', data: { message: 'Goals updated' } };
 };
 
+const createMatch = async (match: matchInput) => {
+  const newMatch = await MatchModel.create({ ...match, inProgress: true });
+
+  return newMatch.dataValues;
+};
+
 export default {
   getAllMatches,
   getAllInProgress,
   updateProgress,
   updateGoals,
+  createMatch,
 };

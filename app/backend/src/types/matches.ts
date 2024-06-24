@@ -9,3 +9,10 @@ export type GoalsInputMatch = {
   homeTeamGoals: number,
   awayTeamGoals: number
 };
+
+export type matchInput = {
+  homeTeamId: number,
+  awayTeamId: number,
+  homeTeamGoals: number,
+  awayTeamGoals: number
+};
