@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import UserModel from '../../database/models/user.model';
+import UserModel from '../database/models/user.model';
 
 const secret = process.env.JWT_SECRET || 'jwt_secret';
 
@@ -25,7 +25,7 @@ const verify = (token: string): TokenPayload | null | undefined => {
   }
 };
 
-const authorizationVerify = async (req: Request, res: Response, next: NextFunction) => {
+const tokenValidation = async (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization) {
@@ -43,9 +43,8 @@ const authorizationVerify = async (req: Request, res: Response, next: NextFuncti
   if (!user) {
     return res.status(401).json({ message: 'Token must be a valid token' });
   }
-  req.body.user = user;
-  res.status(200).json({ role: decoded.role });
+
   next();
 };
 
-export default authorizationVerify;
+export default tokenValidation;

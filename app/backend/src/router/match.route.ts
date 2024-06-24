@@ -4,13 +4,14 @@ import authorization from '../middlewares/auth/authorization';
 import matchGoalsValidation from '../middlewares/matchGoals.validation';
 import matchValidation from '../middlewares/matchValidation';
 import matchTeamsValidation from '../middlewares/matchTeamsValidation';
+import tokenValidation from '../middlewares/tokenValidation';
 
 const router = Router();
 
 router.get('/', matchController.getAllMatches);
 router.post(
   '/',
-  authorization,
+  tokenValidation,
   matchValidation,
   matchTeamsValidation,
   matchController.createMatch,
