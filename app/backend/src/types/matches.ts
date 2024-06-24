@@ -4,3 +4,8 @@ export type MatchesDBReturnAll = {
   status: string,
   data: MatchSequelizeModel[] | []
 };
+
+export type GoalsInputMatch = {
+  homeTeamGoals: number,
+  awayTeamGoals: number
+};

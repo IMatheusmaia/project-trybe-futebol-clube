@@ -47,7 +47,27 @@ const getAllInProgress = async (inProgress: boolean): Promise<MatchesDBReturnAll
   return { status: 'SUCCESSFUL', data: matches };
 };
 
+const updateProgress = async (id: number) => {
+  const match = await MatchModel.findByPk(id);
+  if (!match) return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
+
+  await match.update({ inProgress: false });
+
+  return { status: 'SUCCESSFUL', data: { message: 'Finished' } };
+};
+
+const updateGoals = async (id: number, homeTeamGoals: number, awayTeamGoals: number) => {
+  const match = await MatchModel.findByPk(id);
+  if (!match) return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
+
+  await match.update({ homeTeamGoals, awayTeamGoals });
+
+  return { status: 'SUCCESSFUL', data: { message: 'Goals updated' } };
+};
+
 export default {
   getAllMatches,
   getAllInProgress,
+  updateProgress,
+  updateGoals,
 };
