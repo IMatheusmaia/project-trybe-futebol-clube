@@ -8,8 +8,8 @@ const matchGoalsSchema = Joi.object({
 }) as ObjectSchema<GoalsInputMatch>;
 
 const matchSchema = Joi.object({
-  homeTeamId: Joi.number().positive().required(),
-  awayTeamId: Joi.number().positive().required(),
+  homeTeamId: Joi.number().min(1).required(),
+  awayTeamId: Joi.number().min(1).required(),
   homeTeamGoals: Joi.number().positive().allow(0).required(),
   awayTeamGoals: Joi.number().positive().allow(0).required(),
 }) as ObjectSchema;

@@ -51,7 +51,8 @@ const updateGoals = async (req: Request, res: Response) => {
 };
 const createMatch = async (req: Request, res: Response) => {
   try {
-    const newMatch = await MatchService.createMatch(req.body);
+    const match = req.body;
+    const newMatch = await MatchService.createMatch(match);
 
     if (newMatch) return res.status(201).json(newMatch);
   } catch (error: unknown) {

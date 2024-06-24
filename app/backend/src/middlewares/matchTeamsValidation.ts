@@ -15,7 +15,7 @@ const matchTeamsValidation = async (
   const isValidTeams = await Promise.all([homeTeamId, awayTeamId]
     .map((teamId: number) => TeamModel.findOne({ where: { id: Number(teamId) } })));
 
-  if (isValidTeams.some((team) => team === undefined)) {
+  if (isValidTeams.some((team) => team === null)) {
     return res.status(404).json({ message: 'There is no team with such id!' });
   }
 

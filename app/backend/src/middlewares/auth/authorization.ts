@@ -43,8 +43,6 @@ const authorizationVerify = async (req: Request, res: Response, next: NextFuncti
   if (!user) {
     return res.status(401).json({ message: 'Token must be a valid token' });
   }
-  res.status(200).json({ role: decoded.role });
-  req.body.user = user;
 
   next();
 };

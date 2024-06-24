@@ -67,8 +67,7 @@ const updateGoals = async (id: number, homeTeamGoals: number, awayTeamGoals: num
 
 const createMatch = async (match: matchInput) => {
   const newMatch = await MatchModel.create({ ...match, inProgress: true });
-
-  return newMatch.dataValues;
+  return newMatch;
 };
 
 export default {
