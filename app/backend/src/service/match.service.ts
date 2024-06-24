@@ -60,7 +60,10 @@ const updateGoals = async (id: number, homeTeamGoals: number, awayTeamGoals: num
   const match = await MatchModel.findByPk(id);
   if (!match) return { status: 'NOT_FOUND', data: { message: 'Match not found' } };
 
-  await match.update({ homeTeamGoals, awayTeamGoals });
+  await MatchModel.update(
+    { homeTeamGoals, awayTeamGoals },
+    { where: { id } },
+  );
 
   return { status: 'SUCCESSFUL', data: { message: 'Goals updated' } };
 };

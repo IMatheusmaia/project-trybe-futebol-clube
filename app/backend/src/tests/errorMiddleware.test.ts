@@ -9,7 +9,6 @@ const {expect} = chai;
 chai.use(sinonChai);
 import errorMiddleware from '../middlewares/errorMiddleware';
 import ICustomError from '../Interfaces/ICustomError';
-import { NOW } from 'sequelize';
 
 describe('Testa as funções da pasta middleware', () => {
   beforeEach(function () {
