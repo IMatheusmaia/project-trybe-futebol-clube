@@ -52,11 +52,15 @@ const updateGoals = async (req: Request, res: Response) => {
 const createMatch = async (req: Request, res: Response) => {
   try {
     const match = req.body;
-    const newMatch = await MatchService.createMatch(match);
+    const { status, data } = await MatchService.createMatch(match);
 
-    if (newMatch) return res.status(201).json(newMatch);
+    if (status === 'CREATED') return res.status(mapStatusHTTP(status)).json(data);
+
+    throw new Error(status);
   } catch (error: unknown) {
-    return res.status(500).json({ message: 'Internal server error' });
+    if (error instanceof Error) {
+      return res.status(mapStatusHTTP(error.message)).json({});
+    }
   }
 };
 

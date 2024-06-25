@@ -70,7 +70,9 @@ const updateGoals = async (id: number, homeTeamGoals: number, awayTeamGoals: num
 
 const createMatch = async (match: matchInput) => {
   const newMatch = await MatchModel.create({ ...match, inProgress: true });
-  return newMatch;
+  if (!newMatch) return { status: 'CONFLICT', data: { message: 'Unable to create match' } };
+
+  return { status: 'CREATED', data: newMatch };
 };
 
 export default {

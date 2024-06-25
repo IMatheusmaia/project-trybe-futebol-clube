@@ -23,9 +23,47 @@ describe('Testa o retorno da camada controller para a rota de /matches', () => {
     res.json = sinon.stub().returns(res);
     sinon.restore();
   });
+  it('Testa se a função createMatch retorna o valor esperado em caso de retorno bem sucedido do banco de dados', async () => {
+    const newMatch = {
+      homeTeamId: 5,
+      awayTeamId: 3, 
+      homeTeamGoals: 0,
+      awayTeamGoals: 0
+    };
+    req.body = sinon.stub().returns(newMatch);
+
+    const returnDB = MatchModel.build(req.body);
+    returnDB.dataValues.id = 10;
+    returnDB.dataValues.inProgress = true;
+    returnDB.dataValues = { ...returnDB.dataValues, ...newMatch };
+
+    sinon.stub(MatchModel, 'create').resolves(returnDB.dataValues as any);
+    sinon.stub(MatchService, 'createMatch').resolves({ status: 'CREATED', data: returnDB.dataValues as any});
+
+    await MatchController.createMatch(req, res);
+
+    expect(res.status).to.have.been.calledWith(201);
+    expect(res.json).to.have.been.calledWith(returnDB.dataValues);
+  });
+  it('Testa se a função createMatch retorna o valor esperado em caso de retorno mal sucedido do banco de dados', async () => {
+    
+    req.body = sinon.stub().returns(undefined);
+
+    const returnDB = MatchModel.build(req.body);
+
+
+    sinon.stub(MatchModel, 'create').resolves(returnDB);
+    sinon.stub(MatchService, 'createMatch').resolves({ status: 'CONFLICT', data: { message: 'Unable to create match'}});
+
+    await MatchController.createMatch(req, res);
+
+    expect(res.status).to.have.been.calledWith(409);
+    expect(res.json).to.have.been.calledWith({});
+  });
   before(function () {
     req.query = sinon.stub().returns(undefined) as any;
-  })
+  });
+
   it('Testa se a função getAllMatches retorna o valor esperado em caso de retorno bem sucedido do banco de dados', async () => {
     
     const returnDB = AllmatchesMock.map((team) => MatchModel.build(team));
@@ -98,29 +136,4 @@ describe('Testa o retorno da camada controller para a rota de /matches', () => {
     expect(res.status).to.have.been.calledWith(404);
     expect(res.json).to.have.been.calledWith({});
   });
-  // it('Testa se a função createMatch retorna o valor esperado em caso de retorno bem sucedido do banco de dados', async () => {
-  //   const newMatch = {
-  //     homeTeamId: 5,
-  //     awayTeamId: 3, 
-  //     homeTeamGoals: 0,
-  //     awayTeamGoals: 0
-  //   }
-  //   req.body = sinon.stub().returns(newMatch);
-
-  //   const returnDB = MatchModel.build(req.body);
-
-  //   returnDB.dataValues.id = 10;
-  //   returnDB.dataValues.inProgress = true;
-  //   returnDB.dataValues = { ...returnDB.dataValues, ...newMatch };
-
-  //   console.log(returnDB);
-  //   console.log('-----------')
-    
-  //   sinon.stub(MatchService, 'createMatch').resolves(returnDB);
-
-  //   await MatchController.updateGoals(req, res);
-
-  //   expect(res.status).to.have.been.calledWith(201);
-  //   expect(res.json).to.have.been.calledWith(returnDB);
-  // });
 });
