@@ -38,7 +38,7 @@ describe('Testa o retorno da camada service para a rota de /matches', () => {
     const returnDB = MatchModel.build({...newMatch, id: 6 });
 
     sinon.stub(MatchModel, 'create').resolves(returnDB);
-    console.log(returnDB);
+    
     const returnTeamService = await MatchService.createMatch({...newMatch});
 
     expect(returnTeamService.dataValues).to.be.eql({...newMatch, id: 6});
