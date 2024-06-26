@@ -141,7 +141,8 @@ const reduceList = (list: any[]) => (
       acc[curr.name].goalsFavor += curr.goalsFavor;
       acc[curr.name].goalsOwn += curr.goalsOwn;
       acc[curr.name].totalPoints += curr.totalPoints;
-      acc[curr.name].efficiency = ((acc[curr.name].efficiency + curr.efficiency) / 2).toFixed(2);
+      acc[curr.name].efficiency = ((acc[curr.name].totalPoints
+        / (acc[curr.name].totalGames * 3)) * 100).toFixed(2);
       acc[curr.name].goalsBalance += curr.goalsBalance;
     }
     return acc;
