@@ -15,38 +15,72 @@ const listGamesByName = (data: any[], status: string) => {
   });
   return values;
 };
-const calcTotalVictories = (games: any) => games.reduce((acc: any, curr: any) => {
-  if (curr.homeTeamGoals > curr.awayTeamGoals) {
-    return acc + 1;
+const calcTotalVictories = (games: any, status: string) => games.reduce((acc: any, curr: any) => {
+  if (status === 'home') {
+    if (curr.homeTeamGoals > curr.awayTeamGoals) {
+      return acc + 1;
+    }
+    return acc;
+  }
+  if (status === 'away') {
+    if (curr.awayTeamGoals > curr.homeTeamGoals) {
+      return acc + 1;
+    }
+    return acc;
   }
   return acc;
 }, 0);
-const calcTotalDraws = (games: any) => games.reduce((acc: any, curr: any) => {
-  if (curr.homeTeamGoals === curr.awayTeamGoals) {
-    return acc + 1;
+const calcTotalDraws = (games: any, status: string) => games.reduce((acc: any, curr: any) => {
+  if (status === 'home') {
+    if (curr.homeTeamGoals === curr.awayTeamGoals) {
+      return acc + 1;
+    }
+    return acc;
+  }
+  if (status === 'away') {
+    if (curr.awayTeamGoals === curr.homeTeamGoals) {
+      return acc + 1;
+    }
+    return acc;
   }
   return acc;
 }, 0);
-const calcTotalLosses = (games: any) => games.reduce((acc: any, curr: any) => {
-  if (curr.homeTeamGoals < curr.awayTeamGoals) {
-    return acc + 1;
+const calcTotalLosses = (games: any, status: string) => games.reduce((acc: any, curr: any) => {
+  if (status === 'home') {
+    if (curr.homeTeamGoals < curr.awayTeamGoals) {
+      return acc + 1;
+    }
+    return acc;
+  }
+  if (status === 'away') {
+    if (curr.awayTeamGoals < curr.homeTeamGoals) {
+      return acc + 1;
+    }
+    return acc;
   }
   return acc;
 }, 0);
-const calcGoalsFavor = (games: any) => games
-  .reduce((acc: any, curr: any) => acc + curr.homeTeamGoals, 0);
-
-const calcGoalsOwn = (games: any) => games
-  .reduce((acc: any, curr: any) => acc + curr.awayTeamGoals, 0);
+const calcGoalsFavor = (games: any, status: string) => {
+  if (status === 'home') {
+    return games.reduce((acc: any, curr: any) => acc + curr.homeTeamGoals, 0);
+  }
+  return games.reduce((acc: any, curr: any) => acc + curr.awayTeamGoals, 0);
+};
+const calcGoalsOwn = (games: any, status: string) => {
+  if (status === 'home') {
+    return games.reduce((acc: any, curr: any) => acc + curr.awayTeamGoals, 0);
+  }
+  return games.reduce((acc: any, curr: any) => acc + curr.homeTeamGoals, 0);
+};
 
 const primaryAttributes = (games: any, status: string) => {
   const name = games[0][`${status}Team`].teamName;
   const totalGames = games.length;
-  const totalVictories = calcTotalVictories(games);
-  const totalDraws = calcTotalDraws(games);
-  const totalLosses = calcTotalLosses(games);
-  const goalsFavor = calcGoalsFavor(games);
-  const goalsOwn = calcGoalsOwn(games);
+  const totalVictories = calcTotalVictories(games, status);
+  const totalDraws = calcTotalDraws(games, status);
+  const totalLosses = calcTotalLosses(games, status);
+  const goalsFavor = calcGoalsFavor(games, status);
+  const goalsOwn = calcGoalsOwn(games, status);
   return {
     name,
     totalGames,
@@ -75,7 +109,7 @@ const generateLeaderBoard = (data: any[], status: string) => data.map((games: an
   ...secondaryAttributes(games, status),
 }));
 
-const listLeaderTeams = async (status: 'home' | 'away' = 'home') => {
+const listLeaderTeams = async (status: string) => {
   const { data } = await matchService.getAllInProgress(false);
 
   const listByName = listGamesByName(data, status);
@@ -90,7 +124,7 @@ const listLeaderTeams = async (status: 'home' | 'away' = 'home') => {
     return b.goalsFavor - a.goalsFavor;
   });
 
-  if (leaderBoard) {
+  if (orderedLeaderBoard) {
     return { status: 'SUCCESSFUL', data: orderedLeaderBoard };
   }
   return { status: 'CONFLICT', data: [] };

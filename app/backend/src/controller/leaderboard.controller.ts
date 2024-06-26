@@ -2,9 +2,11 @@ import { Request, Response } from 'express';
 import leaderboardService from '../service/leaderboard.service';
 import mapStatusHTTP from '../utils/mapStatusHTTP';
 
-const listLeaderTeams = async (_req: Request, res: Response) => {
+const listLeaderTeams = async (req: Request, res: Response) => {
   try {
-    const { status, data } = await leaderboardService.listLeaderTeams('home');
+    const url = req.originalUrl.replace(/.*(?=home|away)/, '');
+
+    const { status, data } = await leaderboardService.listLeaderTeams(url);
 
     if (status === 'SUCCESSFUL') {
       return res.status(200).json(data);
