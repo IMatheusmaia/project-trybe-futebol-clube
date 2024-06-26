@@ -1,7 +1,8 @@
 import { Router } from 'express';
+import leaderboardController from '../controller/leaderboard.controller';
 
 const router = Router();
 
-router.get('/', () => null);
+router.get('/home', leaderboardController.listLeaderTeams);
 
 export default router;
