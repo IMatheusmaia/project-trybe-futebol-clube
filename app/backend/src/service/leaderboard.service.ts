@@ -108,7 +108,6 @@ const generateLeaderBoard = (data: any[], status: string) => data.map((games: an
   ...primaryAttributes(games, status),
   ...secondaryAttributes(games, status),
 }));
-
 const listLeaderTeams = async (status: string) => {
   const { data } = await matchService.getAllInProgress(false);
 
@@ -130,6 +129,47 @@ const listLeaderTeams = async (status: string) => {
   return { status: 'CONFLICT', data: [] };
 };
 
+const reduceList = (list: any[]) => (
+  Object.values(list.reduce((acc, curr) => {
+    if (!acc[curr.name]) {
+      acc[curr.name] = { ...curr };
+    } else {
+      acc[curr.name].totalGames += curr.totalGames;
+      acc[curr.name].totalVictories += curr.totalVictories;
+      acc[curr.name].totalDraws += curr.totalDraws;
+      acc[curr.name].totalLosses += curr.totalLosses;
+      acc[curr.name].goalsFavor += curr.goalsFavor;
+      acc[curr.name].goalsOwn += curr.goalsOwn;
+      acc[curr.name].totalPoints += curr.totalPoints;
+      acc[curr.name].efficiency = ((acc[curr.name].efficiency + curr.efficiency) / 2).toFixed(2);
+      acc[curr.name].goalsBalance += curr.goalsBalance;
+    }
+    return acc;
+  }, {})));
+const sortList = (list: any[]) => {
+  const orderedAll = list.sort((c: any, d: any) => {
+    if (c.totalPoints !== d.totalPoints) {
+      return d.totalPoints - c.totalPoints;
+    }
+    if (c.goalsBalance !== d.goalsBalance) {
+      return d.goalsBalance - c.goalsBalance;
+    }
+    return d.goalsFavor - c.goalsFavor;
+  });
+  return orderedAll;
+};
+const lisAllLeaderTeams = async () => {
+  const home = await listLeaderTeams('home');
+  const away = await listLeaderTeams('away');
+  const all = [...home.data, ...away.data];
+  const allReduced = reduceList(all);
+  const orderedAll = sortList(allReduced);
+  if (orderedAll) {
+    return { status: 'SUCCESSFUL', data: orderedAll };
+  }
+  return { status: 'CONFLICT', data: [] };
+};
 export default {
   listLeaderTeams,
+  lisAllLeaderTeams,
 };

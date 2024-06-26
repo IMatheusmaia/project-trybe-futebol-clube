@@ -20,6 +20,23 @@ const listLeaderTeams = async (req: Request, res: Response) => {
   }
 };
 
+const listAllLeaderTeams = async (_req: Request, res: Response) => {
+  try {
+    const { status, data } = await leaderboardService.lisAllLeaderTeams();
+
+    if (status === 'SUCCESSFUL') {
+      return res.status(200).json(data);
+    }
+
+    throw new Error(status);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return res.status(mapStatusHTTP(error.message)).json({});
+    }
+  }
+};
+
 export default {
   listLeaderTeams,
+  listAllLeaderTeams,
 };
